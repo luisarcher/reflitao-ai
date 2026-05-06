@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=72", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "app"
+version = "0.1.0"
+description = "Awesome app created by author"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "author" }
+]
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "requests>=2.32",
+]
+
+[project.urls]
+Homepage = "https://github.com/luisarcher/python_template/"
+Repository = "https://github.com/luisarcher/python_template/"
+Issues = "https://github.com/luisarcher/python_template/issues"
+
+[project.scripts]
+app = "app.app:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "coverage>=7",
+    "ruff>=0.9",
+    "ty>=0.0.1a6",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests", ".github"]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = ["app/__init__.py:__version__"]
+build_command = "uv build"
+branch = "main"
+changelog_file = "CHANGELOG.md"
+upload_to_vcs_release = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=app --cov-report=term-missing --cov-report=xml"
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+fail_under = 80
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ty.environment]
+python-version = "3.11"
