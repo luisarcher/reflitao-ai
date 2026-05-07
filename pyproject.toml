@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "reflitao"
-version = "0.1.0"
+version = "0.2.0"
 description = "AI Thinking Support Telegram Bot — collect mixed-media artifacts into sessions and query LLMs with full context"
 readme = "README.md"
 license = { text = "MIT" }
