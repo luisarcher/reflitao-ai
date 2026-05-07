@@ -88,27 +88,77 @@ python -m reflitao [dir]
 
 | Command | Alias | Description |
 |---------|-------|-------------|
-| `/session <name>` | | Create or switch to a named session |
-| `/listsessions` | `/ls` | List all sessions |
-| `/status` | | Show current session and its files |
-| `/promptsession <prompt>` | `/ps` | Query LLM with full session context |
+| `/session <name>` | `/s` | Create or switch to a named session |
+| `/ls` | | List files in the current session |
+| `/status` | | List all sessions with file-type counts |
+| `/promptsession [prompt]` | `/ps` | Query LLM with session context (empty prompt allowed, only context is passed) |
 | `/prompt <prompt>` | `/p` | Query LLM without session context |
 | `/get <filename>` | | Download a file from the current session |
 | `/image <description>` | | Generate an image from a text description |
 
+All commands appear in the Telegram keyboard for quick access.
+
 ## How It Works
 
 1. **Collect** — send text, voice, photos, or files to the bot. Everything is saved to your current session folder.
-2. **Organize** — use `/session` to create and switch between named sessions.
-3. **Query** — use `/ps` to send a prompt to Claude Sonnet with all session artifacts as context.
+2. **Organize** — use `/s <name>` to create and switch between named sessions.
+3. **Query** — use `/ps` to send a prompt to Claude Sonnet with all session artifacts as context. LLM responses are rendered in Markdown and persisted as `.md` files in the session.
 
-## Use cases
+## Screenshots
 
-Most applications of AI vendors already support access to the camera, realtime audio and text. Hows does this benefits me?
+<p align="center">
+  <img src="./docs/ss/ss1.jpg" width="300" />
+  &nbsp;&nbsp;
+  <img src="./docs/ss/ss2.jpg" width="300" />
+</p>
 
-You create multiple sessions for any variety of topic and you actually OWN both input and output data.
-You can actually brainstorm into .md files and you can run reflitao next to your personal knowledge manager like Obsidian.
-In my case this is how I use reflitao, brainstorm on ideas and link it to my existing Obsidian notes.
+## Use Cases
+
+Most AI apps already support camera, audio, and text. How is this different?
+
+With reflitao you **own** both input and output data as plain files on disk. Every session is a folder of timestamped `.md`, `.jpg`, and `.ogg` files you can inspect, version-control, or feed into other tools.
+
+**Brainstorming with Obsidian** — run reflitao in your Obsidian vault directory. Thoughts captured via Telegram appear as `.md` files you can link to existing notes:
+
+```
+cd ~/obsidian-vault
+reflitao
+```
+
+Send text, photos, or voice notes from your phone. Then:
+
+```
+/s brainstorm          # create a session
+```
+
+Send a photo, a voice memo, and some text messages. Then:
+
+```
+/ps summarize everything and suggest next steps
+```
+
+The LLM response is saved as a `_response.md` file right in your vault.
+
+**Multi-topic sessions** — keep separate threads for different projects:
+
+```
+/s work-project
+/s travel-plans
+/status                # see all sessions with file counts
+```
+
+**Quick questions** — use `/p` for one-off prompts that don't need session context:
+
+```
+/p what's the capital of France?
+```
+
+**Review session contents** — check what's in the current session:
+
+```
+/ls                    # list files (like Linux ls)
+/get 20260507120000.md # download a specific file
+```
 
 ## Development
 
