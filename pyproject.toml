@@ -3,9 +3,9 @@ requires = ["setuptools>=72", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "app"
+name = "reflitao"
 version = "0.1.0"
-description = "Awesome app created by author"
+description = "AI Thinking Support Telegram Bot — collect mixed-media artifacts into sessions and query LLMs with full context"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -22,16 +22,18 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "requests>=2.32",
+    "python-telegram-bot>=20",
+    "openai>=1.0",
+    "anthropic>=0.25",
 ]
 
 [project.urls]
-Homepage = "https://github.com/luisarcher/python_template/"
-Repository = "https://github.com/luisarcher/python_template/"
-Issues = "https://github.com/luisarcher/python_template/issues"
+Homepage = "https://github.com/luisarcher/reflitao-ai/"
+Repository = "https://github.com/luisarcher/reflitao-ai/"
+Issues = "https://github.com/luisarcher/reflitao-ai/issues"
 
 [project.scripts]
-app = "app.app:main"
+reflitao = "reflitao.__main__:main"
 
 [dependency-groups]
 dev = [
@@ -43,22 +45,22 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-exclude = ["tests", ".github"]
+include = ["reflitao*"]
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
-version_variables = ["app/__init__.py:__version__"]
-build_command = "uv build"
+version_variables = ["reflitao/__init__.py:__version__"]
+build_command = "pip install uv && uv build"
 branch = "main"
 changelog_file = "CHANGELOG.md"
 upload_to_vcs_release = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=app --cov-report=term-missing --cov-report=xml"
+addopts = "--cov=reflitao --cov-report=term-missing --cov-report=xml"
 
 [tool.coverage.run]
-source = ["app"]
+source = ["reflitao"]
 omit = ["tests/*"]
 
 [tool.coverage.report]
