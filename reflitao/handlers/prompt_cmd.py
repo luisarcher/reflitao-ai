@@ -1,10 +1,13 @@
 from datetime import datetime
 
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from reflitao.handlers.session_cmd import get_current_session
 from reflitao.services.llm import call_llm, split_message
+
+# type: ignore[override]
 
 
 def _save_response(session_path, prompt: str, result: str) -> None:
@@ -15,13 +18,23 @@ def _save_response(session_path, prompt: str, result: str) -> None:
     md_path.write_text(content, encoding="utf-8")
 
 
-async def promptsession_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """/promptsession <prompt> — query LLM with full session context."""
-    if not context.args:
-        await update.message.reply_text("Usage: /promptsession <prompt>")
-        return
+async def _send_markdown(update: Update, text: str) -> None:
+    """Send text as Markdown, falling back to plain text on parse errors."""
+    assert update.message is not None
+    for chunk in split_message(text):
+        try:
+            await update.message.reply_text(chunk, parse_mode=ParseMode.MARKDOWN)
+        except Exception:
+            await update.message.reply_text(chunk)
 
-    prompt = " ".join(context.args)
+
+async def promptsession_command(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    """/promptsession <prompt> — query LLM with full session context."""
+    assert update.message is not None
+    assert update.effective_user is not None
+    prompt = " ".join(context.args) if context.args else ""
     user_id = update.effective_user.id
     cfg = context.bot_data["config"]
     _, session_path = get_current_session(context, user_id)
@@ -35,13 +48,13 @@ async def promptsession_command(update: Update, context: ContextTypes.DEFAULT_TY
         return
 
     _save_response(session_path, prompt, result)
-
-    for chunk in split_message(result):
-        await update.message.reply_text(chunk)
+    await _send_markdown(update, result)
 
 
 async def prompt_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """/prompt <prompt> — query LLM with no session context."""
+    assert update.message is not None
+    assert update.effective_user is not None
     if not context.args:
         await update.message.reply_text("Usage: /prompt <prompt>")
         return
@@ -60,6 +73,4 @@ async def prompt_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     _save_response(session_path, prompt, result)
-
-    for chunk in split_message(result):
-        await update.message.reply_text(chunk)
+    await _send_markdown(update, result)
