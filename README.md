@@ -17,7 +17,7 @@ A Telegram bot for AI-assisted thinking. Collect mixed-media artifacts (text, au
 - **File uploads** — any document uploaded goes straight to the current session
 - **LLM prompting with context** — query Claude Sonnet with your full session as context (`/ps`)
 - **Raw LLM prompting** — quick questions without session context (`/p`)
-- **Image generation** — generate images via OpenAI's gpt-image-1 (`/image`)
+- **Image generation** — generate images via OpenAI's gpt-image-2 (`/image`)
 - **File retrieval** — download any session artifact via `/get`
 - **Multi-user** — state is persisted per user, sessions are isolated
 - **Flat-file storage** — no database, everything is inspectable on disk
