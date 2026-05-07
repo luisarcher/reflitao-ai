@@ -3,9 +3,13 @@ from telegram.ext import ContextTypes
 
 from reflitao.handlers.session_cmd import get_current_session
 
+# type: ignore[override]
+
 
 async def get_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """/get <filename> — send a file from the current session."""
+    assert update.message is not None
+    assert update.effective_user is not None
     if not context.args:
         await update.message.reply_text("Usage: /get <filename>")
         return
@@ -27,4 +31,5 @@ async def get_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text("Invalid filename.")
         return
 
-    await update.message.reply_document(document=open(file_path, "rb"), filename=filename)
+    with open(file_path, "rb") as f:
+        await update.message.reply_document(document=f, filename=filename)

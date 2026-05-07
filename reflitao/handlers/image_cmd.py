@@ -5,9 +5,12 @@ from telegram.ext import ContextTypes
 
 from reflitao.services.image import generate_image
 
+# type: ignore[override]
+
 
 async def image_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """/image <description> — generate an image and send it back."""
+    assert update.message is not None
     if not context.args:
         await update.message.reply_text("Usage: /image <description>")
         return

@@ -6,19 +6,29 @@ from telegram.ext import ContextTypes
 from reflitao.handlers.session_cmd import get_current_session
 from reflitao.services.whisper import transcribe
 
+# type: ignore[override]
 
-async def voice_audio_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def voice_audio_handler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     """Handle voice and audio messages: download, transcribe, save both."""
+    assert update.message is not None
+    assert update.effective_user is not None
     user_id = update.effective_user.id
     _, session_path = get_current_session(context, user_id)
     cfg = context.bot_data["config"]
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    if update.message.voice:
-        file = await update.message.voice.get_file()
-    elif update.message.audio:
-        file = await update.message.audio.get_file()
+    voice = update.message.voice
+    audio = update.message.audio
+    if voice:
+        assert voice is not None
+        file = await voice.get_file()
+    elif audio:
+        assert audio is not None
+        file = await audio.get_file()
     else:
         return
 
@@ -35,6 +45,8 @@ async def voice_audio_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle photo messages: save image and optional caption."""
+    assert update.message is not None
+    assert update.effective_user is not None
     user_id = update.effective_user.id
     _, session_path = get_current_session(context, user_id)
 
@@ -58,10 +70,13 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def document_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle document/file uploads: save to current session folder."""
+    assert update.message is not None
+    assert update.effective_user is not None
     user_id = update.effective_user.id
     _, session_path = get_current_session(context, user_id)
 
     document = update.message.document
+    assert document is not None
     file = await document.get_file()
 
     # Use original filename if available, otherwise timestamp-based

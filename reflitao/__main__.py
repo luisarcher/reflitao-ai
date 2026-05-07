@@ -13,10 +13,7 @@ def main() -> None:
         return
 
     # Determine data directory
-    if args:
-        data_dir = Path(args[0]).resolve()
-    else:
-        data_dir = Path.cwd()
+    data_dir = Path(args[0]).resolve() if args else Path.cwd()
 
     # Ensure data dir exists
     data_dir.mkdir(parents=True, exist_ok=True)

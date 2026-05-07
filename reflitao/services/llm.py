@@ -1,9 +1,12 @@
 import base64
 from pathlib import Path
+from typing import Any, cast
 
 import anthropic
 
 from reflitao.config import DEFAULT_LLM_MODEL
+
+# type: ignore[override]
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 AUDIO_EXTENSIONS = {".ogg", ".mp3", ".wav", ".m4a"}
@@ -24,10 +27,12 @@ def _build_context_blocks(session_path: str) -> list[dict]:
 
         if f.suffix == ".md":
             text = f.read_text(encoding="utf-8")
-            blocks.append({
-                "type": "text",
-                "text": f"--- {f.name} ---\n{text}",
-            })
+            blocks.append(
+                {
+                    "type": "text",
+                    "text": f"--- {f.name} ---\n{text}",
+                }
+            )
         elif f.suffix.lower() in IMAGE_EXTENSIONS:
             data = base64.standard_b64encode(f.read_bytes()).decode("ascii")
             media_type_map = {
@@ -38,25 +43,31 @@ def _build_context_blocks(session_path: str) -> list[dict]:
                 ".webp": "image/webp",
             }
             media_type = media_type_map.get(f.suffix.lower(), "image/jpeg")
-            blocks.append({
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": media_type,
-                    "data": data,
-                },
-            })
-            blocks.append({
-                "type": "text",
-                "text": f"[Image: {f.name}]",
-            })
+            blocks.append(
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": media_type,
+                        "data": data,
+                    },
+                }
+            )
+            blocks.append(
+                {
+                    "type": "text",
+                    "text": f"[Image: {f.name}]",
+                }
+            )
         elif f.suffix.lower() in AUDIO_EXTENSIONS:
             if f.stem in md_basenames:
                 continue
-            blocks.append({
-                "type": "text",
-                "text": f"[Audio file: {f.name} — no transcript available]",
-            })
+            blocks.append(
+                {
+                    "type": "text",
+                    "text": f"[Audio file: {f.name} — no transcript available]",
+                }
+            )
 
     return blocks
 
@@ -69,10 +80,12 @@ def call_llm(api_key: str, prompt: str, session_path: str | None = None) -> str:
         context_blocks = _build_context_blocks(session_path)
         if context_blocks:
             content.extend(context_blocks)
-            content.append({
-                "type": "text",
-                "text": f"\n--- User Prompt ---\n{prompt}",
-            })
+            content.append(
+                {
+                    "type": "text",
+                    "text": f"\n--- User Prompt ---\n{prompt}",
+                }
+            )
         else:
             content.append({"type": "text", "text": prompt})
     else:
@@ -81,14 +94,14 @@ def call_llm(api_key: str, prompt: str, session_path: str | None = None) -> str:
     response = client.messages.create(
         model=DEFAULT_LLM_MODEL,
         max_tokens=4096,
-        messages=[{"role": "user", "content": content}],
+        messages=[{"role": "user", "content": cast(Any, content)}],
     )
 
     # Extract text from response
     parts = []
     for block in response.content:
         if block.type == "text":
-            parts.append(block.text)
+            parts.append(cast(Any, block).text)
     return "\n".join(parts)
 
 

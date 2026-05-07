@@ -4,7 +4,9 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "reflitao"
+CONFIG_DIR = (
+    Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "reflitao"
+)
 CONFIG_FILE = CONFIG_DIR / "config.toml"
 
 DEFAULT_SESSION = "session0"
@@ -32,11 +34,12 @@ def load_config(data_dir: Path) -> Config:
     def _get(env_var: str, file_key: str) -> str:
         val = os.environ.get(env_var) or file_cfg.get(file_key)
         if not val:
-            print(
-                f"Error: {env_var} not set and '{file_key}' not found in {CONFIG_FILE}\n"
-                f"Run 'reflitao init' to configure, or set the environment variable.",
-                file=sys.stderr,
+            msg = (
+                f"Error: {env_var} not set and '{file_key}' not found in "
+                f"{CONFIG_FILE}\nRun 'reflitao init' to configure, or set the "
+                "environment variable."
             )
+            print(msg, file=sys.stderr)
             sys.exit(1)
         return val
 
