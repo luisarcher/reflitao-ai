@@ -176,3 +176,4 @@ cython_debug/
 # Bot runtime data
 state.json
 sessions/
+.drafts

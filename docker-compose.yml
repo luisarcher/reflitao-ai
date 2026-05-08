@@ -1,0 +1,16 @@
+services:
+  reflitao:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reflitao
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      REFLITAO_TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      REFLITAO_OPENAI_API_KEY: ${OPENAI_API_KEY}
+      REFLITAO_ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    command: ["reflitao", "/data"]
+    volumes:
+      - ./data:/data
